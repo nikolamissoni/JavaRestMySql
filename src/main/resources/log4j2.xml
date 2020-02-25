@@ -19,7 +19,7 @@
         </Logger>
 
         <!-- Log everything from Controller to a file -->
-        <Logger name="com.example.mysql.controllers.MainController" level="info" additivity="false">
+        <Logger name="com.example.mysql.controllers.MainController" level="debug" additivity="false">
             <!-- <AppenderRef ref="Console" /> -->
             <AppenderRef ref="File" />
         </Logger>

@@ -6,10 +6,12 @@ import com.example.mysql.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping(path="/")
@@ -23,17 +25,18 @@ public class MainController {
 
     @Autowired
     public MainController(UserService uService){
-        LOGGER.info("*-*-* Inside MainController constructor");
+
+        LOGGER.debug("*-*-* Inside MainController constructor");
+
         this.userService = uService;
     }
 
     @PostMapping(path="add")
     //public @ResponseBody String addNewUser(@RequestBody User user){
-    public @ResponseBody
-    ResponseEntity addNewUser(@RequestBody User user){
+    //public @ResponseBody
+    ResponseEntity<User> addNewUser(@RequestBody User user){
 
-        LOGGER.info("*-*-* info Entering addNewUser method");
-        LOGGER.debug("*-*-* debug Entering addNewUser method");
+        LOGGER.debug("*-*-* Entering addNewUser method");
 
         var ret = userService.addUser(user);
 
@@ -41,12 +44,17 @@ public class MainController {
     }
 
     @GetMapping(produces = "application/json")
-    public Iterable<User> getUsers(){
+    //public Iterable<User> getUsers(){
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Iterable<User>> getUsers(){
 
-        LOGGER.info("*-*-* info Entering getUsers method");
-        LOGGER.debug("*-*-* debug Entering getUsers method");
+        LOGGER.debug("*-*-* Entering getUsers method");
+        var users = userService.findAll();
+        if(StreamSupport.stream(users.spliterator(), false).count() == 0){
+            return (ResponseEntity.noContent().build());
+        }
 
-        return  userService.findAll();
+        return  ResponseEntity.ok(userService.findAll());
     }
 
     @PutMapping(path="update")
