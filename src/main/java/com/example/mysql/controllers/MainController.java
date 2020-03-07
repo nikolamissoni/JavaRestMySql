@@ -57,6 +57,7 @@ public class MainController {
         return  ResponseEntity.ok(userService.findAll());
     }
 
+    //updated comment just for test
     @PutMapping(path="update")
     public User updateUser(@RequestBody User user){
         //var updateUser = userRepository.findById(user.getId());
