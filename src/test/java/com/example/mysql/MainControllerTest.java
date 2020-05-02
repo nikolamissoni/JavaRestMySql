@@ -8,13 +8,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Testing the controller
+ * These tests are not meant to be comprehensive tests for
+ * service layer.
+ */
 @WebMvcTest(MainController.class)
 @TestPropertySource(locations="classpath:test.properties")
-public class UserServiceTest {
+public class MainControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -85,6 +91,42 @@ public class UserServiceTest {
 
         this.mockMvc.perform(post("/add").contentType(MediaType.APPLICATION_JSON).content(jsonUser))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void saveEmailShouldUpdateAndReturnUser() throws Exception {
+
+        ObjectMapper mapper = new ObjectMapper();
+        User user = new User(){{
+            setId(1);
+            setName("test");
+            setEmail("test@test.com");
+        }};
+
+        when(userService.saveEmail(user)).thenReturn(ResponseEntity.ok(user));
+
+        this.mockMvc.perform(post("/updateEmail")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(user))).andExpect(status().isOk());
+    }
+
+    @Test
+    public void saveEmailNoUserReturnNoContent() throws Exception {
+
+        ObjectMapper mapper = new ObjectMapper();
+        User user = new User(){{
+            setId(1);
+            setName("test");
+            setEmail("test@test.com");
+        }};
+
+        when(userService.saveEmail(user)).thenReturn(ResponseEntity.noContent().build());
+
+        this.mockMvc.perform(post("/updateEmail")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(user))).andExpect(status().isOk());
     }
 
     @Test

@@ -64,6 +64,12 @@ public class MainController {
         return (userService.save(user));
     }
 
+    @PostMapping(path="updateEmail")
+    public ResponseEntity<User> updateUserEmail(@RequestBody User user) {
+
+        return (userService.saveEmail(user));
+    }
+
     @DeleteMapping(path="delete/{userId}")
     public String deleteUser(@PathVariable int userId){
 
