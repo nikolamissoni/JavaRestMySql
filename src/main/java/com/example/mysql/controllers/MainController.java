@@ -19,15 +19,12 @@ public class MainController {
 
     private static final Logger LOGGER = LogManager.getLogger(MainController.class.getName());
 
-    //@Autowired
-    //private final UserRepository userRepository;
     private final UserService userService;
 
     @Autowired
     public MainController(UserService uService){
 
         LOGGER.debug("*-*-* Inside MainController constructor");
-
         this.userService = uService;
     }
 
@@ -40,12 +37,11 @@ public class MainController {
 
         var ret = userService.addUser(user);
 
-        return ResponseEntity.ok(ret);
+        //return ResponseEntity.ok(ret);
+        return new ResponseEntity<>(ret, HttpStatus.CREATED);
     }
 
     @GetMapping(produces = "application/json")
-    //public Iterable<User> getUsers(){
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Iterable<User>> getUsers(){
 
         LOGGER.debug("*-*-* Entering getUsers method");
@@ -54,7 +50,7 @@ public class MainController {
             return (ResponseEntity.noContent().build());
         }
 
-        return  ResponseEntity.ok(userService.findAll());
+        return  ResponseEntity.ok(users);
     }
 
     //updated comment just for test
@@ -67,7 +63,9 @@ public class MainController {
     @PostMapping(path="updateEmail")
     public ResponseEntity<User> updateUserEmail(@RequestBody User user) {
 
+        LOGGER.debug("*-*-* Update email called");
         return (userService.saveEmail(user));
+
     }
 
     @DeleteMapping(path="delete/{userId}")

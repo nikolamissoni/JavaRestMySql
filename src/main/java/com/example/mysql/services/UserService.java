@@ -5,6 +5,8 @@ import com.example.mysql.models.User;
 import com.example.mysql.repositories.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
+
         this.userRepository = userRepository;
     }
 
@@ -49,16 +52,18 @@ public class UserService {
 
     public ResponseEntity<User> saveEmail(User user) {
 
+        LOGGER.debug("*-*-* saveEmail");
         Optional<User> foundUser = userRepository.findById(user.getId());
         if(foundUser.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            LOGGER.debug("*-*-* foundUser optional is empty");
+            return ResponseEntity.notFound().build();
         }
 
         if(!user.getEmail().contains("@")) {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-
+        LOGGER.debug("*-*-* saveEmail set user to some object");
         foundUser.get().setEmail(user.getEmail());
         return ResponseEntity.ok(userRepository.save(foundUser.get()));
     }
